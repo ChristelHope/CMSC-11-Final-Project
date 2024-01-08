@@ -26,10 +26,10 @@ class Window():
         self._mainmenuFrame = Frame(self._mainmenu)
 
         self._newGameButton = Button(self._mainmenuFrame, text="New Game",
-                                     fg="white", bg='black', font=("Helvetica", 30), command=self.displayNight)
+                                     fg="white", bg='black', font=("Helvetica", 30), command=self.newgame)
 
         self._continueButton = Button(self._mainmenuFrame, text="Continue",
-                                      fg="white", bg='black', font=("Helvetica", 30), command=quit)
+                                      fg="white", bg='black', font=("Helvetica", 30), command=self.continueButton)
 
         self._quitButton = Button(self._mainmenuFrame, text="Quit",
                                   fg="white", bg='black', font=("Helvetica", 30), command=quit)
@@ -112,25 +112,10 @@ class Window():
             "atRightDoor": False
         }
 
-        self.leftDoorStatus = {
-            "isOpen": True,
-            "isClose": False
-        }
-
-        self.rightDoorStatus = {
-            "isOpen": True,
-            "isClose": False
-        }
-
-        self.leftLightStatus = {
-            "isOff": True,
-            "isOn": False
-        }
-
-        self.rightLightStatus = {
-            "isOff": True,
-            "isOn": False
-        }
+        self.leftDoorOpen = True
+        self.rightDoorOpen = True
+        self.leftLightOn = False
+        self.rightLightOn = False
 
         self.batteryLife = 1003
         self.showBattery = Label(self._gameCanvas, text=f"{100}%",
@@ -171,17 +156,17 @@ class Window():
         self.cam5Label = Label(self.cctvs, background="black")
         self.cam6Label = Label(self.cctvs, background="black")
         self.cam1 = Button(self.cctvs, background="blue",
-                           text="CAM 1", command=self.toggleCam1)
+                           text="Stage", command=self.toggleCam1)
         self.cam2 = Button(self.cctvs, background="white",
-                           text="CAM 2", command=self.toggleCam2)
+                           text="Dining Hall", command=self.toggleCam2)
         self.cam3 = Button(self.cctvs, background="red",
-                           text="CAM 3", command=self.toggleCam3)
+                           text="Supply Room", command=self.toggleCam3)
         self.cam4 = Button(self.cctvs, background='green',
-                           text="CAM 4", command=self.toggleCam4)
+                           text="Left Hallway", command=self.toggleCam4)
         self.cam5 = Button(self.cctvs, background="yellow",
-                           text="CAM 5", command=self.toggleCam5)
+                           text="Pirate's Cove", command=self.toggleCam5)
         self.cam6 = Button(self.cctvs, background="pink",
-                           text="CAM 6", command=self.toggleCam6)
+                           text="Right Hallway", command=self.toggleCam6)
         self.camButton = Button(self.cctvs, background="white", command=self.resetCams)
         self.checkCams = False
             
@@ -218,7 +203,18 @@ class Window():
         self.showFoxxy.pack()
         self.turnOnThread = True
         self.gamethread()
-    
+        
+    def newgame(self):
+        self.level = 1
+        self._showNight.config(text=f"Night {self.level}")
+        self.displayNight()
+        
+    def continueButton(self):
+        if self.level == 1:
+            pass
+        else:
+            self.displayNight()
+        
     def cameraFunction(self): #Contains all of the widgets for the camera system
         self.cam1.grid(row=0, column=0, sticky=NSEW)
         self.cam2.grid(row=0, column=1, sticky=NSEW)
@@ -362,58 +358,47 @@ class Window():
         self.checkCams = True
 
     def closeLeftDoor(self): 
-        if self.leftDoorStatus["isOpen"]:
-            self.leftDoorStatus["isOpen"] = False
-            self.leftDoorStatus["isClose"] = True
+        if self.leftDoorOpen:
+            self.leftDoorOpen = False
             self.leftDoor.config(text="Close")
-        elif self.leftDoorStatus["isClose"]:
-            self.leftDoorStatus["isOpen"] = True
-            self.leftDoorStatus["isClose"] = False
+        else:
+            self.leftDoorOpen = True
             self.leftDoor.config(text="Open")
 
     def closeRightDoor(self):
-        if self.rightDoorStatus["isOpen"]:
-            self.rightDoorStatus["isOpen"] = False
-            self.rightDoorStatus["isClose"] = True
+        if self.rightDoorOpen: 
+            self.rightDoorOpen = False
             self.rightDoor.config(text="Close")
-        elif self.rightDoorStatus["isClose"]:
-            self.rightDoorStatus["isOpen"] = True
-            self.rightDoorStatus["isClose"] = False
+        else:
+            self.rightDoorOpen = True
             self.rightDoor.config(text="Open")
 
     def turnOnLeftLight(self):
-        if self.leftLightStatus["isOff"]:
-            self.leftLightStatus["isOff"] = False
-            self.leftLightStatus["isOn"] = True
-            self.leftLight.config(text="On")
-        elif self.leftLightStatus["isOn"]:
-            self.leftLightStatus["isOff"] = True
-            self.leftLightStatus["isOn"] = False
+        if self.leftLightOn:
+            self.leftLightOn = False
             self.leftLight.config(text="Off")
+        else:
+            self.leftLightOn = True
+            self.leftLight.config(text="On")
 
     def turnOnRightLight(self):
-        if self.rightLightStatus["isOff"]:
-            self.rightLightStatus["isOff"] = False
-            self.rightLightStatus["isOn"] = True
-            self.rightLight.config(text="On")
-        elif self.rightLightStatus["isOn"]:
-            self.rightLightStatus["isOff"] = True
-            self.rightLightStatus["isOn"] = False
+        if self.rightLightOn:
+            self.rightLightOn = False
             self.rightLight.config(text="Off")
-
-    def cameraBattery(self): #Contains nothing yet
-        pass
+        else:
+            self.rightLightOn = True
+            self.rightLight.config(text="On")
 
     def battery(self): #Shows battery and decrements the battery as time goes by
         while self.turnOnThread:
             batDepletion = 0.09
-            if self.leftDoorStatus["isClose"]:
+            if not self.leftDoorOpen:
                 batDepletion += 0.27
-            if self.rightDoorStatus["isClose"]:
+            if not self.rightDoorOpen:
                 batDepletion += 0.27
-            if self.leftLightStatus["isOn"]:
+            if self.leftLightOn:
                 batDepletion += 0.18
-            if self.rightLightStatus["isOn"]:
+            if self.rightLightOn:
                 batDepletion += 0.18
             if self._camOn:
                 batDepletion += 0.2
@@ -432,7 +417,7 @@ class Window():
             else:
                 timeInGame = self.timePassed//50
 
-            self.timePassed += 1
+            self.timePassed += 100
             self.officeTime.config(text=f"{timeInGame}:00AM")
             sleep(1)
             
@@ -446,9 +431,9 @@ class Window():
             else:
                 self.showFoxxy.config(text="")
             if self.foxyAnger > 100:
-                sleep(5)
-                if self.leftDoorStatus["isClose"]:
-                    self.batteryLife -= 30
+                sleep(3)
+                if not self.leftDoorOpen:
+                    self.batteryLife -= 20 + (self.level*1)
                     self.foxyAnger = 0
                     
                 else:
@@ -457,7 +442,6 @@ class Window():
             if not self._camOn:
                 self.foxyAnger += 0.08*self.level  # Set this to 0.08 if foxxy is already animated
             sleep(0.1)
-            print(self.foxyAnger)
 
     def bonnieMoving(self): #In charge of Bonnie's actions in the game
         bonnie = "inShowStage"
@@ -469,7 +453,7 @@ class Window():
                 rand = 6
             else:
                 rand = 10
-            print(self.level)
+            print(self.level, "Bon")
 
             # Bonnies Transition
 
@@ -480,23 +464,13 @@ class Window():
             elif self.bonniesLocation["inSupplyCloset"] and 0 < randomNumBonnie < rand:
                 bonnie = "inLeftHallway"
             elif self.bonniesLocation["inLeftHallway"] and 0 < randomNumBonnie < rand:
-                bonnie = "outsideLeftDoor"
-                for location in self.bonniesLocation:
-                    if bonnie == location:
-                        self.bonniesLocation[location] = True
-                        print(location)
-                    else:
-                        self.bonniesLocation[location] = False
+                self.bonniesLocation["inLeftHallway"] = False
+                self.bonniesLocation["outsideLeftDoor"] = True
                 sleep(6)
                 continue
             elif self.bonniesLocation["outsideLeftDoor"]:
-                bonnie = "atLeftDoor"
-                for location in self.bonniesLocation:
-                    if bonnie == location:
-                        self.bonniesLocation[location] = True
-                        print(location)
-                    else:
-                        self.bonniesLocation[location] = False
+                self.bonniesLocation["outsideLeftDoor"] = False
+                self.bonniesLocation["atLeftDoor"] = True
                 sleep(4)
                 continue
             elif self.bonniesLocation["atLeftDoor"]:
@@ -529,23 +503,13 @@ class Window():
             elif self.chicasLocation["inDiningArea"] and 0 < randomNumChica < rand:
                 chica = "inRightHallway"
             elif self.chicasLocation["inRightHallway"] and 0 < randomNumChica < rand:
-                chica = "outsideRightDoor"
-                for location in self.chicasLocation:
-                    if chica == location:
-                        self.chicasLocation[location] = True
-                        print(location)
-                    else:
-                        self.chicasLocation[location] = False
+                self.chicasLocation["inRightHallway"] = False
+                self.chicasLocation["outsideRightDoor"] = True
                 sleep(6)
                 continue
             elif self.chicasLocation["outsideRightDoor"]:
-                chica = "atRightDoor"
-                for location in self.chicasLocation:
-                    if chica == location:
-                        self.chicasLocation[location] = True
-                        print(location)
-                    else:
-                        self.chicasLocation[location] = False
+                self.chicasLocation["outsideRightDoor"] = False
+                self.chicasLocation["atRightDoor"] = True
                 sleep(3)
                 continue
             elif self.chicasLocation["atRightDoor"]:
@@ -564,7 +528,7 @@ class Window():
 
     def bonnieLightInteraction(self): #Shows if Bonnie is in the door when the light is turned on
         while self.turnOnThread:
-            if (self.bonniesLocation["outsideLeftDoor"] or self.bonniesLocation["atLeftDoor"]) and self.leftLightStatus["isOn"]:
+            if (self.bonniesLocation["outsideLeftDoor"] or self.bonniesLocation["atLeftDoor"]) and self.leftLightOn:
                 self.showBonnie.config(text="Bonnie at door")
             else:
                 self.showBonnie.config(text="")
@@ -572,7 +536,7 @@ class Window():
 
     def chicaLightInteraction(self): #Shows if Chica is in the door when the lights is turned on
         while self.turnOnThread:
-            if (self.chicasLocation["outsideRightDoor"] or self.chicasLocation["atRightDoor"]) and self.rightLightStatus["isOn"]:
+            if (self.chicasLocation["outsideRightDoor"] or self.chicasLocation["atRightDoor"]) and self.rightLightOn:
                 self.showChica.config(text="Chica at door.")
             else:
                 self.showChica.config(text="")
@@ -580,14 +544,14 @@ class Window():
 
     def bonnieDoorInteraction(self): #In charge checking if you closed the door on animatronics or what
         while self.turnOnThread:
-            if self.bonniesLocation["atLeftDoor"] and self.leftDoorStatus["isOpen"]:
+            if self.bonniesLocation["atLeftDoor"] and self.leftDoorOpen:
                 self.jumpScare()
 
             sleep(0.1)
 
     def chicaDoorInteraction(self):
         while self.turnOnThread:
-            if self.chicasLocation["atRightDoor"] and self.rightDoorStatus["isOpen"]:
+            if self.chicasLocation["atRightDoor"] and self.rightDoorOpen:
                 self.jumpScare()
 
             sleep(0.1)
@@ -643,6 +607,7 @@ class Window():
         cam6_thread.start()
 
     def winning(self): #Called if you survive until 6am, shows the congrats interface
+        
         self.turnOnThread = False
         self.resetAll()
         self._gameCanvas.pack_forget()
@@ -658,10 +623,16 @@ class Window():
         congrats.place(x=(self._width-congratsWidth)//2,
                        y=(self._height-congratsHeight)//2)
         self._master.after(5000, winningCanvas.destroy)
-        self._showNight.config(text=f"Night {self.level}") #For some reason, if we did not config the text, it will always show Night 1 even if the level becomes harder
+        self._showNight.config(text=f"Night {self.level}") #For some reason, if we did not config the text, it will always show Night 1 even if the level changed
         sleep(5)
         winningCanvas.pack_forget()
-        self.displayNight()
+        
+        if self.level == 4:
+            self.level = 3
+            self._showNight.config(text=f"Night {self.level}")
+            self.gameComplete()
+        else:
+            self.displayNight()
 
     def jumpScare(self): #Called if an animatronic entered your room or if your battery runs out
         self.turnOnThread = False
@@ -682,6 +653,22 @@ class Window():
         sleep(5)
         self.run()
 
+    def gameComplete(self):
+        CompletionCanvas = Canvas(
+            self._master, background="blue", highlightthickness=0)
+        CompletionCanvas.pack(expand=YES, fill=BOTH)
+
+        completed = Label(CompletionCanvas, text='CONGRATS', font=(
+            'helvetica', 30), fg='white', bg='black')
+        completed.pack()
+        congratsHeight = completed.winfo_reqheight()
+        congratsWidth = completed.winfo_reqwidth()
+        completed.place(x=(self._width-congratsWidth)//2,
+                       y=(self._height-congratsHeight)//2)
+        self._master.after(5000, CompletionCanvas.destroy)
+        sleep(5)
+        self.run()
+    
     def resetAll(self): #Resets all states
         self.batteryLife = 1003
         self. timePassed = 0
@@ -695,6 +682,7 @@ class Window():
         self.leftLight.config(text="Off")
         self.rightLight.config(text="Off")
         self.foxyAnger = 0
+        
         self.bonniesLocation = {
             "inShowStage": True,
             "inDiningArea": False,
@@ -711,29 +699,15 @@ class Window():
             "atRightDoor": False
         }
 
-        self.leftDoorStatus = {
-            "isOpen": True,
-            "isClose": False
-        }
-
-        self.rightDoorStatus = {
-            "isOpen": True,
-            "isClose": False
-        }
-
-        self.leftLightStatus = {
-            "isOff": True,
-            "isOn": False
-        }
-
-        self.rightLightStatus = {
-            "isOff": True,
-            "isOn": False
-        }
+        self.leftDoorOpen = True
+        self.rightDoorOpen = True
+        self.leftLightOn = False
+        self.rightLightOn = False
 
 def firstgame(): #Calls the game
-    josh = Tk()
-    joshua = Window(josh)
-    joshua.run()
+    if __name__ == "__main__":
+        game = Tk()
+        fnaf = Window(game)
+        fnaf.run()
 
 firstgame()
