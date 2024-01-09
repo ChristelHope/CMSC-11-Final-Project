@@ -15,24 +15,25 @@ class Window():
         self.level = 1
             
         '''For the main interface'''
-        self._mainmenu = Canvas(self._master, background="red", width=self._width,
+        self._mainmenu = Canvas(self._master, width=self._width,
                                 height=self._height, highlightthickness=0)
 
-        self._gameTitle = Label(self._mainmenu, text="Five Nights at UP",
-                                font=("Helvetica", 70), fg='white', bg='black')
+        self._gameTitle = Label(self._mainmenu, bg="black", text=
+"""Five Nights at Freddy's""",
+                                font=("Helvetica", 50), fg='white')
         
         self._gameTitle_width = self._gameTitle.winfo_reqwidth()
 
         self._mainmenuFrame = Frame(self._mainmenu)
 
         self._newGameButton = Button(self._mainmenuFrame, text="New Game",
-                                     fg="white", bg='black', font=("Helvetica", 30), command=self.newgame)
+                                     fg="white", bg="black", font=("Helvetica", 30), command=self.newgame)
 
         self._continueButton = Button(self._mainmenuFrame, text="Continue",
-                                      fg="white", bg='black', font=("Helvetica", 30), command=self.continueButton)
+                                      fg="white", bg="black", font=("Helvetica", 30), command=self.continueButton)
 
         self._quitButton = Button(self._mainmenuFrame, text="Quit",
-                                  fg="white", bg='black', font=("Helvetica", 30), command=quit)
+                                  fg="white", bg="black",font=("Helvetica", 30), command=quit)
 
         '''For displaying what night it is'''
         self._nightCanvas = Canvas(self._master,
@@ -43,15 +44,45 @@ class Window():
         self._showNight = Label(self._nightCanvas, text=f'Night {self.level}', font=(
             'helvetica', 30), fg='white', bg='black')
 
-        self._gameCanvas = Canvas(self._master, bg='white',
+        self._gameCanvas = Canvas(self._master, bg='black',
                                   highlightthickness=0,
                                   scrollregion=(-300, 0, self._width+300, self._height))
         
         self._gameCanvas.bind("<Motion>", self.scrollEffectAndCams)
 
         #initializing the images used in the game
-        self.background_image = Image.open(
-            "C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\background.png")
+        self.mainmenu_image = Image.open(
+            "C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\mainmenu.png")
+        
+        self.resized_mainmenu = self.mainmenu_image.resize(
+            (int(self._width), int(self._height)))
+        self.adjusted_mainmenu = ImageTk.PhotoImage(self.resized_mainmenu)
+        self._mainmenu.create_image(0, 0, anchor=NW, image=self.adjusted_mainmenu)
+        
+        self.background_image1 = Image.open(
+            "C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\bg1.png")
+        self.background_image2 = Image.open(
+            "C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\bg2.png")
+        self.background_image3 = Image.open(
+            "C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\bg3.png")
+        self.background_image4 = Image.open(
+            "C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\bg4.png")
+        self.background_image5 = Image.open(
+            "C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\bg5.png")
+        self.background_image6 = Image.open(
+            "C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\bg6.png")
+        self.background_image7 = Image.open(
+            "C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\bg7.png")
+        self.background_image8 = Image.open(
+            "C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\bg8.png")
+        self.background_image9 = Image.open(
+            "C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\bg9.png")
+        
+        # Resize the image based on screen dimensions
+        self.resized_bgimage = self.background_image1.resize(
+            (int(self._width)+600, int(self._height)))
+        self.adjusted_bgimage = ImageTk.PhotoImage(self.resized_bgimage)
+        self.bg = self._gameCanvas.create_image(-300, 0,anchor=NW, image=self.adjusted_bgimage)
         
         self.cam1pic1 = PhotoImage(
             file="C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\cam1pic1.png")
@@ -81,17 +112,18 @@ class Window():
         self.cam4pic2 = PhotoImage(
             file="C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\cam4pic2.png")
 
+        self.cam5pic1 = PhotoImage(
+            file="C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\cam5pic1.png")
+        self.cam5pic2 = PhotoImage(
+            file="C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\cam5pic2.png")
+        self.cam5pic3 = PhotoImage(
+            file="C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\cam5pic3.png")
+        
         self.cam6pic1 = PhotoImage(
             file="C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\cam6pic1.png")
         self.cam6pic2 = PhotoImage(
             file="C:\\Users\\joshu\\OneDrive\\Desktop\\Python\\Practice\\tkinter\\Images\\cam6pic2.png")
 
-        # Resize the image based on screen dimensions
-        self.resized_image = self.background_image.resize(
-            (int(self._width)+600, int(self._height)))
-        self.adjusted_image = ImageTk.PhotoImage(self.resized_image)
-        self._gameCanvas.create_image(-300, 0,
-                                      anchor=NW, image=self.adjusted_image)
 
         self.turnOnThread = False
         self.foxyAnger = 0
@@ -137,15 +169,6 @@ class Window():
         self.rightLight = Button(self._gameCanvas, text="Off",
                                  background="black", foreground="white", command=self.turnOnRightLight)
 
-        self.showChica = Label(self._gameCanvas, text="",
-                               background="black", foreground="white")
-
-        self.showBonnie = Label(self._gameCanvas, text="",
-                                background="black", foreground="white")
-        
-        self.showFoxxy = Label(self._gameCanvas, text="",
-                               background="black", foreground="white")
-
 
         self._camOn = False
         self.cctvs = Frame(self._gameCanvas, background="black")
@@ -170,10 +193,95 @@ class Window():
         self.camButton = Button(self.cctvs, background="white", command=self.resetCams)
         self.checkCams = False
             
+            
+    def backgroundImage(self): #Changes the background image depends onf 
+        while self.turnOnThread:
+            if self.bonniesLocation["outsideLeftDoor"] and self.leftLightOn and self.chicasLocation["outsideRightDoor"] and self.rightLightOn:
+                self.resized_bgimage = self.background_image4.resize(
+                    (int(self._width)+600, int(self._height)))
+                self.adjusted_bgimage = ImageTk.PhotoImage(
+                    self.resized_bgimage)
+                self._gameCanvas.delete(self.bg)
+                self.bg1 = self._gameCanvas.create_image(-300, 0,
+                                                         anchor=NW, image=self.adjusted_bgimage)
+                
+            
+            elif not self.leftDoorOpen and not self.rightDoorOpen:
+                self.resized_bgimage = self.background_image7.resize(
+                    (int(self._width)+600, int(self._height)))
+                self.adjusted_bgimage = ImageTk.PhotoImage(
+                    self.resized_bgimage)
+                self._gameCanvas.delete(self.bg)
+                self.bg2 = self._gameCanvas.create_image(-300, 0,
+                                                         anchor=NW, image=self.adjusted_bgimage)
+            
+            elif not self.leftDoorOpen and self.chicasLocation["outsideRightDoor"] and self.rightLightOn:
+                self.resized_bgimage = self.background_image9.resize(
+                    (int(self._width)+600, int(self._height)))
+                self.adjusted_bgimage = ImageTk.PhotoImage(
+                    self.resized_bgimage)
+                self._gameCanvas.delete(self.bg)
+                self.bg3 = self._gameCanvas.create_image(-300, 0,
+                                                         anchor=NW, image=self.adjusted_bgimage)
+            
+            elif not self.rightDoorOpen and self.bonniesLocation["outsideLeftDoor"] and self.leftLightOn:
+                self.resized_bgimage = self.background_image9.resize(
+                    (int(self._width)+600, int(self._height)))
+                self.adjusted_bgimage = ImageTk.PhotoImage(
+                    self.resized_bgimage)
+                self._gameCanvas.delete(self.bg)
+                self.bg4 = self._gameCanvas.create_image(-300, 0,
+                                                         anchor=NW, image=self.adjusted_bgimage)
+                
+            elif not self.leftDoorOpen:
+                self.resized_bgimage = self.background_image8.resize(
+                    (int(self._width)+600, int(self._height)))
+                self.adjusted_bgimage = ImageTk.PhotoImage(
+                    self.resized_bgimage)
+                self._gameCanvas.delete(self.bg)
+                self.bg5 = self._gameCanvas.create_image(-300, 0,
+                                                         anchor=NW, image=self.adjusted_bgimage)
+                
+            elif not self.rightDoorOpen:
+                self.resized_bgimage = self.background_image6.resize(
+                    (int(self._width)+600, int(self._height)))
+                self.adjusted_bgimage = ImageTk.PhotoImage(
+                    self.resized_bgimage)
+                self._gameCanvas.delete(self.bg)
+                self.bg6 = self._gameCanvas.create_image(-300, 0,
+                                                         anchor=NW, image=self.adjusted_bgimage)
+                
+            elif self.chicasLocation["outsideRightDoor"] and self.rightLightOn:
+                self.resized_bgimage = self.background_image3.resize(
+                    (int(self._width)+600, int(self._height)))
+                self.adjusted_bgimage = ImageTk.PhotoImage(
+                    self.resized_bgimage)
+                self._gameCanvas.delete(self.bg)
+                self.bg7 = self._gameCanvas.create_image(-300, 0,
+                                                         anchor=NW, image=self.adjusted_bgimage)
+
+            elif self.bonniesLocation["outsideLeftDoor"] and self.leftLightOn:
+                self.resized_bgimage = self.background_image2.resize(
+                    (int(self._width)+600, int(self._height)))
+                self.adjusted_bgimage = ImageTk.PhotoImage(
+                    self.resized_bgimage)
+                self._gameCanvas.delete(self.bg)
+                self.bg8 = self._gameCanvas.create_image(-300, 0,
+                                                         anchor=NW, image=self.adjusted_bgimage)
+                
+            else:
+                self.resized_bgimage = self.background_image1.resize(
+                    (int(self._width)+600, int(self._height)))
+                self.adjusted_bgimage = ImageTk.PhotoImage(self.resized_bgimage)
+                self.bg9 = self._gameCanvas.create_image(-300, 0,
+                                                         anchor=NW, image=self.adjusted_bgimage)
+            
+            sleep(0.1)
+            
     def run(self): #Runs the game
         self._mainmenu.pack(expand=YES, fill=BOTH)
-        self._gameTitle.place(x=(self._width-self._gameTitle_width)//2, y=100)
-        self._mainmenuFrame.place(x=(self._width-235)//2, y=400)
+        self._gameTitle.place(x=(self._width-self._gameTitle_width)//7, y=250)
+        self._mainmenuFrame.place(x=(self._width-235)//3.5, y=400)
         self._newGameButton.pack(expand=YES, fill=BOTH)
         self._continueButton.pack(expand=YES, fill=BOTH)
         self._quitButton.pack(expand=YES, fill=BOTH)
@@ -188,19 +296,17 @@ class Window():
 
     def runGame(self): #Starts the game
         self._gameCanvas.pack(expand=YES, fill=BOTH)
-        self.officeTime.place(x=200, y=0)
+        self.officeTime.place(x=(self._width)//2, y=0)
         self.showBattery.place(x=0, y=0)
         self.leftDoor_window = self._gameCanvas.create_window(
-            (-200), self._height//2, anchor=NW, window=self.leftDoor)
+            (0), self._height//2, anchor=NW, window=self.leftDoor)
         self.rightDoor_window = self._gameCanvas.create_window(
-            (self._width+200), self._height//2, anchor=NE, window=self.rightDoor)
+            (self._width), self._height//2, anchor=NE, window=self.rightDoor)
         self.leftDoor_window = self._gameCanvas.create_window(
-            (-200), (self._height//2)+50, anchor=NW, window=self.leftLight)
+            (0), (self._height//2)+50, anchor=NW, window=self.leftLight)
         self.leftDoor_window = self._gameCanvas.create_window(
-            (self._width + 200), (self._height//2) + 50, anchor=NE, window=self.rightLight)
-        self.showBonnie.pack()
-        self.showChica.pack()
-        self.showFoxxy.pack()
+            (self._width), (self._height//2) + 50, anchor=NE, window=self.rightLight)
+
         self.turnOnThread = True
         self.gamethread()
         
@@ -258,6 +364,7 @@ class Window():
         self.cam2Label.grid_forget()
         self.cam3Label.grid_forget()
         self.cam4Label.grid_forget()
+        self.cam5Label.grid_forget()
         self.cam6Label.grid_forget()
         
     def resetCams(self): #this function will be the one incharge for the back button in the camera system
@@ -310,8 +417,15 @@ class Window():
                 self.cam4Label.config(image=self.cam4pic1)
             sleep(0.1)
 
-    def cam5Update(self):
-        pass
+    def cam5Update(self): #Updates what phase of foxy is shown in the pirate's cove
+        while self.turnOnThread:
+            if self.foxyAnger < 75:
+                self.cam5Label.config(image=self.cam5pic1)
+            elif self.foxyAnger < 100:
+                self.cam5Label.config(image=self.cam5pic2)
+            else:
+                self.cam5Label.config(image=self.cam5pic3)
+            sleep(0.1)
 
     def cam6Update(self):
         while self.turnOnThread:
@@ -347,7 +461,7 @@ class Window():
 
     def toggleCam5(self):
         self.gridForget()
-        self.cam4Label.grid(row=0, column=0, rowspan=3,
+        self.cam5Label.grid(row=0, column=0, rowspan=3,
                             columnspan=3, sticky=NSEW)
         self.checkCams = True
 
@@ -417,7 +531,7 @@ class Window():
             else:
                 timeInGame = self.timePassed//50
 
-            self.timePassed += 100
+            self.timePassed += 1
             self.officeTime.config(text=f"{timeInGame}:00AM")
             sleep(1)
             
@@ -426,14 +540,10 @@ class Window():
 
     def foxxyMoving(self): #In charge of Foxxy's actions in the game
         while self.turnOnThread:
-            if self.foxyAnger > 95:
-                self.showFoxxy.config(text="Foxxy is coming")
-            else:
-                self.showFoxxy.config(text="")
             if self.foxyAnger > 100:
                 sleep(3)
                 if not self.leftDoorOpen:
-                    self.batteryLife -= 20 + (self.level*1)
+                    self.batteryLife -= 20 + (self.level*10)
                     self.foxyAnger = 0
                     
                 else:
@@ -526,22 +636,6 @@ class Window():
             randomNumChica = randint(1, 20)
             print(randomNumChica)
 
-    def bonnieLightInteraction(self): #Shows if Bonnie is in the door when the light is turned on
-        while self.turnOnThread:
-            if (self.bonniesLocation["outsideLeftDoor"] or self.bonniesLocation["atLeftDoor"]) and self.leftLightOn:
-                self.showBonnie.config(text="Bonnie at door")
-            else:
-                self.showBonnie.config(text="")
-            sleep(0.1)
-
-    def chicaLightInteraction(self): #Shows if Chica is in the door when the lights is turned on
-        while self.turnOnThread:
-            if (self.chicasLocation["outsideRightDoor"] or self.chicasLocation["atRightDoor"]) and self.rightLightOn:
-                self.showChica.config(text="Chica at door.")
-            else:
-                self.showChica.config(text="")
-            sleep(0.1)
-
     def bonnieDoorInteraction(self): #In charge checking if you closed the door on animatronics or what
         while self.turnOnThread:
             if self.bonniesLocation["atLeftDoor"] and self.leftDoorOpen:
@@ -557,6 +651,9 @@ class Window():
             sleep(0.1)
 
     def gamethread(self): #Contains all the threads that are used in the game
+        background_thread = Thread(target=self.backgroundImage, daemon=True)
+        background_thread.start()
+        
         bonnies_movement_thread = Thread(target=self.bonnieMoving, daemon=True)
         bonnies_movement_thread.start()
 
@@ -579,14 +676,6 @@ class Window():
         chicaGameplay_thread = Thread(
             target=self.chicaDoorInteraction, daemon=True)
         chicaGameplay_thread.start()
-
-        bonnieLight_thread = Thread(
-            target=self.bonnieLightInteraction, daemon=True)
-        bonnieLight_thread.start()
-
-        chicaLight_thread = Thread(
-            target=self.chicaLightInteraction, daemon=True)
-        chicaLight_thread.start()
 
         cam1_thread = Thread(target=self.cam1Update, daemon=True)
         cam1_thread.start()
@@ -682,7 +771,6 @@ class Window():
         self.leftLight.config(text="Off")
         self.rightLight.config(text="Off")
         self.foxyAnger = 0
-        
         self.bonniesLocation = {
             "inShowStage": True,
             "inDiningArea": False,
